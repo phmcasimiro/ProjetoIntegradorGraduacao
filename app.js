@@ -1,15 +1,34 @@
-// app.js
-// Um simples servidor HTTP em Node.js que responde com "Olá, Mundo!"
+// Importa as bibliotecas
+const express = require('express');
+const bodyParser = require('body-parser');
+// Vamos definir a porta através de variáveis de ambiente no futuro,
+// mas por agora, usaremos o padrão 3000
+const PORT = 3000;
 
-const http = require('http'); // Importa o módulo HTTP nativo do Node.js
+// Inicializa o aplicativo Express
+const app = express();
 
-const server = http.createServer((req, res) => { // Cria o servidor HTTP
-    res.writeHead(200, {'Content-Type': 'text/plain'}); // Define o cabeçalho da resposta
-    res.end('Olá, Mundo!'); // Envia a resposta "Olá, Mundo!"
-}); 
+// Configura o Body-Parser para lidar com dados JSON (essencial para API REST)
+app.use(bodyParser.json());
 
+// Importa a configuração do Banco de Dados para estabelecer a conexão e criar as tabelas
+require('./config/database'); 
 
-const PORT = 3000; // Define a porta onde o servidor irá escutar
-server.listen(PORT, () => { // Inicia o servidor e escuta na porta definida
-    console.log(`Servidor rodando em http://localhost:${PORT}/`); // Loga a URL do servidor no console
-}); 
+// --- Rotas de Teste (Hello World com Express) ---
+app.get('/', (req, res) => {
+    res.send('Olá, Mundo! (Servidor Express em funcionamento)');
+});
+
+// --- Rotas da ETAPA 2 (Produto) ---
+const produtoRoutes = require('./src/routes/produtoRoutes');
+app.use('/produtos', produtoRoutes);
+
+// --- Futuras Rotas da ETAPA 2 serão importadas aqui ---
+// const produtoRoutes = require('./src/routes/produtoRoutes');
+// app.use('/produtos', produtoRoutes);
+// ...
+
+// Inicia o servidor e escuta na porta definida
+app.listen(PORT, () => {
+    console.log(`Servidor Express rodando em http://localhost:${PORT}/`);
+});
